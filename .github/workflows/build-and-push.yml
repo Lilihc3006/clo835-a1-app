@@ -2,15 +2,17 @@ name: Build and push images to ECR
 
 on:
   push:
-    branches: [ "master" ]  # Runs after you merge PRs into master
+    branches:
+      - main
+
+env:
+  AWS_REGION: us-east-1
+  ECR_REPO_WEBAPP: 339712717450.dkr.ecr.us-east-1.amazonaws.com/webapp
+  ECR_REPO_MYSQL: 339712717450.dkr.ecr.us-east-1.amazonaws.com/mysql
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    env:
-      AWS_REGION: us-east-1
-      ECR_REPO_WEBAPP: webapp
-      ECR_REPO_MYSQL: mysql
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,3 +40,4 @@ jobs:
           docker build -t $ECR_REPO_MYSQL -f Dockerfile.mysql .
           docker tag $ECR_REPO_MYSQL:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_MYSQL:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_MYSQL:latest
+
