@@ -2,17 +2,21 @@ name: Build and push images to ECR
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]   # corre cada vez que haces push a main
 
 env:
   AWS_REGION: us-east-1
-  ECR_REPO_WEBAPP: 339712717450.dkr.ecr.us-east-1.amazonaws.com/webapp
-  ECR_REPO_MYSQL: 339712717450.dkr.ecr.us-east-1.amazonaws.com/mysql
+  # Nombres de TUS repositorios en ECR (tal como aparecen en ECR):
+  ECR_REPO_WEBAPP: webapp
+  ECR_REPO_MYSQL: mysql
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
