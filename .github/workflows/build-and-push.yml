@@ -1,21 +1,20 @@
+cd ~/environment/Assignment1_CLO835
+
+cat > .github/workflows/build-and-push.yml <<'YAML'
 name: Build and push images to ECR
 
 on:
   push:
-    branches: [ "main" ]   # corre cada vez que haces push a main
+    branches: [ main ]
 
 env:
   AWS_REGION: us-east-1
-  # Nombres de TUS repositorios en ECR (tal como aparecen en ECR):
   ECR_REPO_WEBAPP: webapp
   ECR_REPO_MYSQL: mysql
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
 
     steps:
       - name: Checkout
@@ -24,10 +23,11 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
-          aws-region: ${{ env.AWS_REGION }}
+          aws-session-token:     ${{ secrets.AWS_SESSION_TOKEN }}
+          aws-region:            ${{ env.AWS_REGION }}
+          output-credentials:    true
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -36,12 +36,17 @@ jobs:
       - name: Build and push webapp image
         run: |
           docker build -t $ECR_REPO_WEBAPP -f Dockerfile.app .
-          docker tag $ECR_REPO_WEBAPP:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_WEBAPP:latest
+          docker tag  $ECR_REPO_WEBAPP:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_WEBAPP:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_WEBAPP:latest
 
       - name: Build and push mysql image
         run: |
           docker build -t $ECR_REPO_MYSQL -f Dockerfile.mysql .
-          docker tag $ECR_REPO_MYSQL:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_MYSQL:latest
+          docker tag  $ECR_REPO_MYSQL:latest ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_MYSQL:latest
           docker push ${{ steps.login-ecr.outputs.registry }}/$ECR_REPO_MYSQL:latest
+YAML
+
+git add .github/workflows/build-and-push.yml
+git commit -m "fix: workflow yaml"
+git push
 
