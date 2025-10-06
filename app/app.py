@@ -1,5 +1,6 @@
 import os
-from flask import Flask, Markup
+from flask import Flask
+from markupsafe import Markup
 
 app = Flask(__name__)
 
