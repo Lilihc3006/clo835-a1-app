@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: web-rs
+  namespace: web
+  labels:
+    app: employees
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: employees
+  template:
+    metadata:
+      labels:
+        app: employees
+    spec:
+      containers:
+        - name: web
+          image: web:1.0.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+          env:
+            - { name: DBHOST,   value: "mysql.database.svc.cluster.local" }
+            - { name: DBPORT,   value: "3306" }
+            - { name: DBUSER,   value: "appuser" }
+            - { name: DBPWD,    value: "apppass123" }
+            - { name: DATABASE, value: "employees" }
